@@ -1,5 +1,5 @@
 import { StatusBar } from "expo-status-bar";
-import MapView from "react-native-maps";
+import MapView, { Marker } from "react-native-maps";
 import { StyleSheet, Text, View, SafeAreaView, Platform } from "react-native";
 import * as Location from "expo-location";
 import { useEffect, useRef, useState } from "react";
@@ -11,6 +11,11 @@ export default function App() {
 		latitudeDelta: 0.2,
 		longitudeDelta: 0.2,
 	};
+	const [markersList, setMarkersList] = useState([
+		{ name: "CF FairView Mall", lat: 43.7787512, lng: -79.3447072 },
+		{ name: "North York General Hospital", lat: 43.7696717, lng: -79.3629892 },
+	]);
+
 	const mapReference = useRef(null);
 
 	useEffect(() => {
@@ -82,7 +87,20 @@ export default function App() {
 	return (
 		<SafeAreaView style={styles.container}>
 			<Text>Open up App.js to start working on your app!</Text>
-			<MapView style={styles.map} ref={mapReference} initialRegion={defaultRegion} />
+			<MapView style={styles.map} ref={mapReference} initialRegion={defaultRegion}>
+				{markersList.map((location, index) => {
+					return (
+						<Marker
+							key={index}
+							coordinate={{
+								latitude: location.lat,
+								longitude: location.lng,
+							}}
+							title={location.name}
+						/>
+					);
+				})}
+			</MapView>
 			<StatusBar style="auto" />
 		</SafeAreaView>
 	);
