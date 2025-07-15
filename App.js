@@ -3,8 +3,17 @@ import MapView, { Marker } from "react-native-maps";
 import { StyleSheet, Text, View, SafeAreaView, Platform } from "react-native";
 import * as Location from "expo-location";
 import { useEffect, useRef, useState } from "react";
+// import axios from "axios";
+
+const API_ENDPOINT = "https://api.geoapify.com/v2/places?categories=activity,catering&conditions=named&filter=circle:LONGITUDE,LATITUDE,KM&limit=NUM_RESULTS&apiKey=API_KEY";
 
 export default function App() {
+	const defaultLocation = {
+		coords: {
+			latitude: 43.7956669,
+			longitude: -79.3502433,
+		},
+	};
 	const defaultRegion = {
 		latitude: 43.7956669,
 		longitude: -79.3502433,
@@ -15,11 +24,13 @@ export default function App() {
 		{ name: "CF FairView Mall", lat: 43.7787512, lng: -79.3447072 },
 		{ name: "North York General Hospital", lat: 43.7696717, lng: -79.3629892 },
 	]);
-
+	const [currentLocation, setCurrentLocation] = useState(defaultLocation);
+	const [currentLocationResult, setCurrentLocationResult] = useState("Current Location Result Goes here");
 	const mapReference = useRef(null);
 
 	useEffect(() => {
 		requestLocationPermission();
+		getCurrentLocation();
 	}, []);
 
 	const requestLocationPermission = async () => {
@@ -43,23 +54,6 @@ export default function App() {
 			const location = await Location.getCurrentPositionAsync({
 				accuracy: Location.Accuracy.Highest,
 			});
-
-			/*
-      Current Location Object
-      {"coords":
-        {
-          "accuracy":5,
-          "longitude":-122.084,
-          "altitude":5,
-          "heading":0,
-          "latitude":37.4219983,
-          "altitudeAccuracy":0.5,
-          "speed":0.0030715973116457462
-        },
-        "mocked":false,
-        "timestamp":1752177246412
-      }
-        */
 
 			if (location !== undefined) {
 				console.log(`Current Location: ${JSON.stringify(location)}`);
@@ -86,7 +80,7 @@ export default function App() {
 
 	return (
 		<SafeAreaView style={styles.container}>
-			<Text>Open up App.js to start working on your app!</Text>
+			<Text style={styles.header}>Here's what's nearby</Text>
 			<MapView style={styles.map} ref={mapReference} initialRegion={defaultRegion}>
 				{markersList.map((location, index) => {
 					return (
@@ -113,6 +107,10 @@ const styles = StyleSheet.create({
 		alignItems: "center",
 		justifyContent: "center",
 		paddingTop: Platform.OS === "android" ? StatusBar.currentHeight : 0,
+	},
+	header: {
+		fontSize: 20,
+		fontStyle: "bold",
 	},
 	map: {
 		width: "100%",
