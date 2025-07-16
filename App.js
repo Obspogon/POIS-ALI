@@ -3,9 +3,7 @@ import MapView, { Marker } from "react-native-maps";
 import { StyleSheet, Text, View, SafeAreaView, Platform } from "react-native";
 import * as Location from "expo-location";
 import { useEffect, useRef, useState } from "react";
-// import axios from "axios";
-
-const API_ENDPOINT = "https://api.geoapify.com/v2/places?categories=activity,catering&conditions=named&filter=circle:LONGITUDE,LATITUDE,KM&limit=NUM_RESULTS&apiKey=API_KEY";
+import axios from "axios";
 
 export default function App() {
 	const defaultLocation = {
@@ -31,6 +29,7 @@ export default function App() {
 	useEffect(() => {
 		requestLocationPermission();
 		getCurrentLocation();
+		getNearbyPOIs();
 	}, []);
 
 	const requestLocationPermission = async () => {
@@ -75,6 +74,20 @@ export default function App() {
 			}
 		} catch (error) {
 			console.log(`Error while fetching current location: ${error.message}`);
+		}
+	};
+
+	const getNearbyPOIs = async () => {
+		try {
+			const response = await axios.get(`https://api.geoapify.com/v2/places?categories=activity,catering&conditions=named&filter=circle:${currentLocation.coords.longitude},${currentLocation.coords.latitude},5000&limit=20&apiKey=234b3cc77c984b28b0da2de092bdaf4a`);
+
+			response.data.features.forEach((point) => {
+				markersList.push({ name: point.properties.name, address: point.properties.address_line2, lat: point.properties.lat, lng: point.properties.lon });
+			});
+			console.log(markersList);
+			setMarkersList([...markersList]);
+		} catch (error) {
+			console.log("Unable to fetch POIs", error);
 		}
 	};
 
