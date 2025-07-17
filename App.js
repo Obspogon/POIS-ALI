@@ -1,5 +1,5 @@
 import { StatusBar } from "expo-status-bar";
-import MapView, { Marker } from "react-native-maps";
+import MapView, { Marker, Callout } from "react-native-maps";
 import { StyleSheet, Text, View, SafeAreaView, Platform } from "react-native";
 import * as Location from "expo-location";
 import { useEffect, useRef, useState } from "react";
@@ -84,7 +84,6 @@ export default function App() {
 			response.data.features.forEach((point) => {
 				markersList.push({ name: point.properties.name, address: point.properties.address_line2, lat: point.properties.lat, lng: point.properties.lon });
 			});
-			console.log(markersList);
 			setMarkersList([...markersList]);
 		} catch (error) {
 			console.log("Unable to fetch POIs", error);
@@ -104,7 +103,14 @@ export default function App() {
 								longitude: location.lng,
 							}}
 							title={location.name}
-						/>
+						>
+							<Callout tooltip>
+								<View style={styles.calloutContainer}>
+									<Text style={styles.calloutTitle}>{location.name}</Text>
+									<Text style={styles.calloutDescription}>{location.address}</Text>
+								</View>
+							</Callout>
+						</Marker>
 					);
 				})}
 			</MapView>
@@ -126,7 +132,29 @@ const styles = StyleSheet.create({
 		fontStyle: "bold",
 	},
 	map: {
-		width: "100%",
-		height: "100%",
+		borderColor: "black",
+		borderWidth: 8,
+		width: "90%",
+		height: "90%",
+	},
+	calloutContainer: {
+		width: 200,
+		backgroundColor: "white",
+		borderRadius: 8,
+		padding: 10,
+		shadowColor: "#000",
+		shadowOffset: { width: 0, height: 2 },
+		shadowOpacity: 0.25,
+		shadowRadius: 3.84,
+		elevation: 5,
+		marginBottom: -10,
+	},
+	calloutTitle: {
+		fontWeight: "bold",
+		fontSize: 16,
+		marginBottom: 5,
+	},
+	calloutDescription: {
+		fontSize: 12,
 	},
 });
