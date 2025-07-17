@@ -4,6 +4,7 @@ import { StyleSheet, Text, View, SafeAreaView, Platform } from "react-native";
 import * as Location from "expo-location";
 import { useEffect, useRef, useState } from "react";
 import axios from "axios";
+import Icon from "react-native-vector-icons/FontAwesome";
 
 export default function App() {
 	const defaultLocation = {
@@ -18,10 +19,7 @@ export default function App() {
 		latitudeDelta: 0.2,
 		longitudeDelta: 0.2,
 	};
-	const [markersList, setMarkersList] = useState([
-		{ name: "CF FairView Mall", lat: 43.7787512, lng: -79.3447072 },
-		{ name: "North York General Hospital", lat: 43.7696717, lng: -79.3629892 },
-	]);
+	const [markersList, setMarkersList] = useState([]);
 	const [currentLocation, setCurrentLocation] = useState(defaultLocation);
 	const [currentLocationResult, setCurrentLocationResult] = useState("Current Location Result Goes here");
 	const mapReference = useRef(null);
@@ -79,10 +77,10 @@ export default function App() {
 
 	const getNearbyPOIs = async () => {
 		try {
-			const response = await axios.get(`https://api.geoapify.com/v2/places?categories=activity,catering&conditions=named&filter=circle:${currentLocation.coords.longitude},${currentLocation.coords.latitude},5000&limit=20&apiKey=234b3cc77c984b28b0da2de092bdaf4a`);
+			const response = await axios.get(`https://api.geoapify.com/v2/places?categories=activity,catering&conditions=named&filter=circle:${currentLocation.coords.longitude},${currentLocation.coords.latitude},5000&limit=50&apiKey=234b3cc77c984b28b0da2de092bdaf4a`);
 
 			response.data.features.forEach((point) => {
-				markersList.push({ name: point.properties.name, address: point.properties.address_line2, lat: point.properties.lat, lng: point.properties.lon });
+				markersList.push({ name: point.properties.name, address: point.properties.address_line2, lat: point.properties.lat, lng: point.properties.lon, catering: point.properties.catering });
 			});
 			setMarkersList([...markersList]);
 		} catch (error) {
@@ -104,6 +102,7 @@ export default function App() {
 							}}
 							title={location.name}
 						>
+							<Icon style={{ marginLeft: "auto", flex: 1 }} name={location.catering ? "cutlery" : "ticket"} size={22} />
 							<Callout tooltip>
 								<View style={styles.calloutContainer}>
 									<Text style={styles.calloutTitle}>{location.name}</Text>
