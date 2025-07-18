@@ -100,7 +100,8 @@ export default function App() {
 								latitude: location.lat,
 								longitude: location.lng,
 							}}
-							title={`${location.name} @ ${location.address}`}
+							title={location.name}
+							description={location.address}
 						>
 							<Icon
 								style={{ marginLeft: "auto", flex: 1 }}
