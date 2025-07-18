@@ -4,7 +4,7 @@ import { StyleSheet, Text, View, SafeAreaView, Platform } from "react-native";
 import * as Location from "expo-location";
 import { useEffect, useRef, useState } from "react";
 import axios from "axios";
-import Icon from "react-native-vector-icons/FontAwesome";
+import Icon from "react-native-vector-icons/FontAwesome6";
 
 export default function App() {
 	const defaultLocation = {
@@ -100,15 +100,22 @@ export default function App() {
 								latitude: location.lat,
 								longitude: location.lng,
 							}}
-							title={location.name}
+							title={`${location.name} @ ${location.address}`}
 						>
-							<Icon style={{ marginLeft: "auto", flex: 1 }} name={location.catering ? "cutlery" : "ticket"} size={22} />
-							<Callout tooltip>
+							<Icon
+								style={{ marginLeft: "auto", flex: 1 }}
+								name={location.catering ? "bowl-food" : "ticket"}
+								size={22}
+								onPress={() => {
+									alert(`${location.name}\n${location.address}`);
+								}}
+							/>
+							{/* <Callout tooltip>
 								<View style={styles.calloutContainer}>
 									<Text style={styles.calloutTitle}>{location.name}</Text>
 									<Text style={styles.calloutDescription}>{location.address}</Text>
 								</View>
-							</Callout>
+							</Callout> */}
 						</Marker>
 					);
 				})}
